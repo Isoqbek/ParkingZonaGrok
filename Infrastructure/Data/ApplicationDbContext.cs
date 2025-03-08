@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<ParkingZone> ParkingZones { get; set; }
     public DbSet<Payment> Payments { get; set; }
     public DbSet<Vehicle> Vehicles { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -21,5 +22,9 @@ public class ApplicationDbContext : DbContext
             .WithMany()
             .HasForeignKey(p => p.OccupiedByVehicleId)
             .IsRequired();
+
+        modelBuilder.Entity<User>()
+          .HasIndex(u => u.Username)
+          .IsUnique();
     }
 }

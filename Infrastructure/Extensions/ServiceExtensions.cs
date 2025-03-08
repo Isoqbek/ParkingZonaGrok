@@ -20,11 +20,13 @@ public static class ServiceExtensions
         services.AddScoped<IParkingSpotRepository, ParkingSpotRepository>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddScoped<IParkingZoneRepository, ParkingZoneRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
         // Services (Application Layer)
         services.AddScoped<IVehicleService, VehicleService>();
         services.AddScoped<IParkingSpotService, ParkingSpotService>();
         services.AddScoped<IParkingZoneService, ParkingZoneService>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IAuthService, AuthService>();
     }
 }
