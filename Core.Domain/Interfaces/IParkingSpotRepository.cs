@@ -9,4 +9,6 @@ public interface IParkingSpotRepository
     Task AddAsync(ParkingSpot spot);
     Task UpdateAsync(ParkingSpot spot);
     Task DeleteAsync(int id);
+    Task<ParkingSpot> GetAvailableSpotAsync();
+    Task<int> GetSpotCountAsync();
 }

@@ -1,5 +1,6 @@
 ﻿using Core.Application.DTOs;
 using Core.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;
@@ -16,6 +17,7 @@ public class PaymentController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public async Task<IActionResult> GetAllPayments()
     {
         var payments = await _paymentService.GetAllPaymentsAsync();
@@ -23,6 +25,7 @@ public class PaymentController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public async Task<IActionResult> GetPaymentById(int id)
     {
         var payment = await _paymentService.GetPaymentByIdAsync(id);
@@ -33,6 +36,7 @@ public class PaymentController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> AddPayment([FromBody] PaymentDto paymentDto)
     {
         await _paymentService.AddPaymentAsync(paymentDto);

@@ -41,4 +41,22 @@ public class ParkingSpotRepository : IParkingSpotRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<ParkingSpot> GetAvailableSpotAsync()
+    {
+        var spot = await _context.ParkingSpots.FirstOrDefaultAsync(s => !s.IsOccupied);
+
+        if (spot == null)
+        {
+            throw new Exception("No available parking spots.");
+        }
+
+        return spot;
+    }
+
+    public async Task<int> GetSpotCountAsync()
+    {
+        return await _context.ParkingSpots.CountAsync();
+    }
+
 }

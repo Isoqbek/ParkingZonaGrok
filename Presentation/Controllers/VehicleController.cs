@@ -1,5 +1,7 @@
 ﻿using Core.Application.DTOs;
+using Core.Application.DTOs.VehivleDTOs;
 using Core.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers;
@@ -16,6 +18,7 @@ public class VehicleController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public async Task<IActionResult> GetAllVehicles()
     {
         var vehicles = await _vehicleService.GetAllVehiclesAsync();
@@ -23,6 +26,7 @@ public class VehicleController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public async Task<IActionResult> GetVehicleById(int id)
     {
         var vehicle = await _vehicleService.GetVehicleByIdAsync(id);
@@ -32,24 +36,51 @@ public class VehicleController : ControllerBase
         return Ok(vehicle);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> AddVehicle([FromBody] VehicleDto vehicleDto)
+    [HttpPost("entry")]
+    //[Authorize(Roles = "Admin,SuperAdmin")]
+    public async Task<IActionResult> RegisterVehicleEntry([FromBody] VehicleExitDto vehicleDto)
     {
-        await _vehicleService.AddVehicleAsync(vehicleDto);
-        return CreatedAtAction(nameof(GetVehicleById), new { id = vehicleDto.Id }, vehicleDto);
+        try
+        {
+            await _vehicleService.AddVehicleAsync(vehicleDto);
+            return Ok("Vehicle entered and spot assigned.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateVehicle(int id, [FromBody] VehicleDto vehicleDto)
+    [HttpPut("exit/{id}")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
+    public async Task<IActionResult> RegisterVehicleExit(string lisencePlate)
     {
-        if (id != vehicleDto.Id)
-            return BadRequest("ID mismatch");
+        try
+        {
+            var vehicle = await _vehicleService.GetVehicleByLicensePlateAsync(lisencePlate);
+            if (vehicle == null)
+                return NotFound();
 
-        await _vehicleService.UpdateVehicleAsync(vehicleDto);
-        return NoContent();
+            var updateDto = new VehicleUpdateDto
+            {
+                LicensePlate = vehicle.LicensePlate,
+                EntryTime = vehicle.EntryTime,
+                ExitTime = DateTime.Now,
+                PaymentStatus = vehicle.PaymentStatus
+            };
+
+            await _vehicleService.UpdateVehicleAsync(updateDto);
+            return Ok("Vehicle exited and spot freed.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> DeleteVehicle(int id)
     {
         await _vehicleService.RemoveVehicleAsync(id);

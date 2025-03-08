@@ -22,4 +22,15 @@ public class ParkingZoneRepository : IParkingZoneRepository
         _context.ParkingZones.Update(zone);
         await _context.SaveChangesAsync();
     }
+
+    public async Task UpdateAvailableSpotsAsync(int zoneId, int availableSpots)
+    {
+        var zone = await _context.ParkingZones.FindAsync(zoneId);
+        if (zone != null)
+        {
+            zone.AvailableSpots = availableSpots;
+            await _context.SaveChangesAsync();
+        }
+    }
+
 }

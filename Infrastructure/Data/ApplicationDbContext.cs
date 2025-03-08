@@ -26,5 +26,9 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<User>()
           .HasIndex(u => u.Username)
           .IsUnique();
+
+        modelBuilder.Entity<ParkingSpot>()
+          .Property(p => p.OccupiedByVehicleId)
+          .IsRequired(false);
     }
 }
